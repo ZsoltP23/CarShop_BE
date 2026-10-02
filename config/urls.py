@@ -20,7 +20,9 @@ from ShopMain import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('gyarto/', views.view_Gyarto),
-    path('gyarto/modell/', views.view_Modell),
-    path('gyarto/modell/tipus/', views.view_Tipus),
+    path('gyarto/', views.view_Gyarto, name="MindenMarka"),
+    path('gyarto/modell/', views.view_Modell, name="MindenModell"),
+    path('gyarto/modell/tipus/', views.view_Tipus, name="MindenTipus"),
+    path('gyarto/<int:pk>/', views.view_Modell_by_Gyarto, name="ModellFokuszalva"),
+    path('gyarto/modell/<int:pk>/', views.view_tipus_by_id, name="EgyAuto")
 ]

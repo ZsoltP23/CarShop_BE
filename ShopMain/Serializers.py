@@ -17,12 +17,13 @@ class SerTipus(ModelSerializer):
         model = Tipus
         fields = '__all__'
 
+
 class TeljesSer(ModelSerializer):
-    gyarto = serializers.CharField(source="Gyarto.nev")
-    gyarto_logo = serializers.CharField(source="Gyarto.Marka_Logo")
-    model_neve = serializers.CharField(source="Modell_nev")
+    gyarto = serializers.CharField(source="modell.marka")
+    #gyarto_logo = serializers.CharField(source="Gyarto.Marka_Logo")
+    model_neve = serializers.CharField(source="modell.Modell_nev")
 
     class Meta:
         model = Tipus
-        fields = ["id","gyarto","gyarto_logo","modell_neve","uzemanyag","kivitel",
+        fields = ["id","gyarto","model_neve","uzemanyag","kivitel",
                  "Ajtok_szama","updated"]

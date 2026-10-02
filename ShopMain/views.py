@@ -28,6 +28,13 @@ def view_Modell(request):
             ser.save()
             return Response(ser.data)
 
+#Modelleket listázz id alapján
+@api_view(['GET'])
+def view_Modell_by_Gyarto(request, pk):
+    modellek = Modell.objects.filter(id=pk)
+    ser = SerModell(modellek, many=True)
+    return Response(ser.data)
+
 @api_view(['GET','POST'])
 def view_Tipus(request):
     if request.method == "GET":
@@ -40,6 +47,9 @@ def view_Tipus(request):
             ser.save()
             return Response(ser.data)
 
+
+
+#mindent kilistázz egyszerre
 @api_view(['GET','POST'])
 def view_All_in_one(request):
     if request.method == "GET":
@@ -53,3 +63,9 @@ def view_All_in_one(request):
         if ser.is_valid():
             ser.save()
             return Response(ser.data)
+
+@api_view(['GET'])
+def view_tipus_by_id(request, pk):
+    tipus = Tipus.objects.filter(id=pk)
+    ser = TeljesSer(tipus, many=True)
+    return Response(ser.data)
