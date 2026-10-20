@@ -1,47 +1,64 @@
+from django.core.validators import MinLengthValidator,RegexValidator
+
 from django.db import models
 
 class Gyarto(models.Model):
 
-    marka = models.CharField(max_length=50)
-    Orszag = models.CharField(max_length=50, blank=True, null=True)
-    Marka_Logo = models.ImageField(upload_to="static/images/Marka_logo")
+    gyarto = models.CharField(max_length=50)
+    orszag = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.marka}" #{self.Marka_Logo}
+        return f"{self.gyarto}"
 
-class Modell(models.Model):
+class Model(models.Model):
 
-    marka = models.ForeignKey(Gyarto, on_delete=models.CASCADE, related_name="modellek")
-    Modell_nev = models.CharField(max_length=255)
-    evjarat = models.IntegerField(default=0)
+    gyarto_Id = models.ForeignKey(Gyarto, on_delete=models.CASCADE, related_name="modellek")
+    model = models.CharField(max_length=255)
+    yrs_from = models.DateTimeField()
+    yrs_til = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.marka},{self.Modell_nev}' 
+        return f'{self.gy_Id},{self.model}' 
 
-class Tipus(models.Model):
+class Type(models.Model):
 
-    modell = models.ForeignKey(Modell, on_delete=models.CASCADE, related_name='Tipusa')
-    #VetelAra = models.DecimalField(default=0, max_digits=10)
-    VetalAra = models.IntegerField(default=67)
-    kmOra = models.IntegerField(default=0, null=True, blank=True)
+    model_Id = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='Tipusa')
+    eng_volume = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
+    drive_method = models.IntegerField(max_length=255)
+    le = models.IntegerField()
+    gearbox = models.IntegerField(max_length=255)
 
-    UZEMANYAG = ((1,"Benzin"),(2,"Dízel"),(3,"Hybrid"),(4,"Elektromos"))
-    uzemanyag = models.IntegerField( choices=UZEMANYAG )
+class Extras(models.Model):
 
-    KIVITEL = ((1,"Sedan"),(2,"Kombi"),(3,"Coupe"),(4,"Cabrio"),(5,"Hatchback"),(5,"Tank"))
-    kivitel = models.IntegerField( choices=KIVITEL )
+    extra = models.CharField(default=255)
+    extras = models.ManyToManyField("self")
 
-    ALLAPOT = ((1,"Használt"),(2,"Új"),(3,"Veterán"))
-    Allapot = models.IntegerField(choices=ALLAPOT)
+class Car(models.Model):
 
-    Hengerurtartalom = models.IntegerField(null=True, blank=True)
+    gyarto_id = models.ForeignKey(Gyarto, on_delete=models.CASCADE, related_name='gyarto_id')
+    model_Id = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='modell_id')
+    type_id = models.ForeignKey(Type, on_delete=models.CASCADE, related_name='type_id')
+    extras = models.ManyToManyField(Extras, blank=True)
 
-    Ajtok_szama = models.IntegerField(null=True,)
-
-    Automata = models.BooleanField(default=False,null=True)
-    Osszkerekes = models.BooleanField(default=False,null=True)
-    Klima = models.BooleanField(default=True,null=True)
-
-
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    vin_code = models.CharField(
+        max_length=17,
+        unique=True,
+        validators=[
+            MinLengthValidator(17),
+            RegexValidator(r"^[A-HJ-NPR-Z0-9]{17}$")
+        ])
+    template_plate = models.CharField(
+        max_length=4,
+        unique=True,
+        validators=[
+            MinLengthValidator(17),
+            RegexValidator("^[A-Z]{4}-\d{3}$")
+        ]
+    )
+    colour = models.CharField(default=255)
+    prd_yr = models.IntegerField()
+    registration_date = models.DateTimeField()
+    mileages_km = models.IntegerField()
+    price_eur = models.IntegerField()
+    notes = models.CharField(default=255)
