@@ -49,10 +49,10 @@ class Car(models.Model):
             RegexValidator(r"^[A-HJ-NPR-Z0-9]{17}$")
         ])
     template_plate = models.CharField(
-        max_length=4,
+        max_length=8,
         unique=True,
         validators=[
-            MinLengthValidator(17),
+            MinLengthValidator(8),
             RegexValidator("^[A-Z]{4}-\d{3}$")
         ]
     )

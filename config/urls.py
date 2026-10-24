@@ -5,6 +5,7 @@ from ShopMain import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', views.view_home),
-    path('des/', views.view_des),
+    path('home/', views.view_home, name="HomePage"),
+    path('des/', views.view_des, name="DescriptionName"),
+    path('des/<int:pk>/', views.view_des_id),
 ]
