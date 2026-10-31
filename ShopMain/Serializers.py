@@ -1,6 +1,8 @@
 from .models import Gyarto, Model, Type, Car, Extras
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 
 
 class SerGyarto(ModelSerializer):
@@ -22,6 +24,7 @@ class SerCar(ModelSerializer):
     class Meta:
         model = Car
         fields = '__all__'
+        read_only_fields = ['owner']
 
 class SerExtras(ModelSerializer):
     class Meta:
@@ -47,7 +50,29 @@ class SerHome(serializers.ModelSerializer):
 class SerDes(SerHome):
 
     extras = SerExtras(many=True, read_only=True)
+    owner = serializers.CharField(source="owner.username", read_only=True, allow_null=True)
 
     class Meta:
         model = Car
-        fields = SerHome.Meta.fields + ["vin_code","template_plate","extras"]
+        fields = SerHome.Meta.fields + ["vin_code","template_plate","extras","owner"]
+
+
+User = get_user_model()
+
+class SerRegister(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True)
+
+    class Meta:
+        model= User
+        fields = ['username','email','password','password2']
+
+    def validate(self, attrs):
+        if attrs["password"] == attrs["password2"]:
+            attrs.pop("password2")
+            return attrs
+        else:
+            raise serializers.ValidationError({"password2": "A két jelszó nem egyezik."})
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)

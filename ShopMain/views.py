@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Gyarto, Model, Type, Car, Extras
-from .Serializers import SerGyarto, SerModel, SerType, SerCar, SerHome, SerDes
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from .models import Car
+from .Serializers import SerRegister, SerCar, SerHome, SerDes
 
 
 
@@ -31,7 +33,7 @@ def view_des(request):
     elif request.method == "POST":
         ser = SerCar(data = request.data)
         if ser.is_valid():
-            ser.save()
+            ser.save(owner=request.user)
             return Response(ser.data, status=201)
         return Response(ser.errors, status=400)
 
@@ -52,6 +54,9 @@ def view_des_id(request, pk):
         return Response(ser.data)
 
     #UPDATE
+    if not (request.user.is_staff or request.user.id == car.owner_id):
+        return Response({"detail": "Csak a saját autódat törölheted."},status=403)
+    
     elif request.method == "PUT":
         ser = SerCar(car, data=request.data)
         if (ser.is_valid()):
@@ -63,3 +68,8 @@ def view_des_id(request, pk):
     elif request.method == "DELETE":
         car.delete()
         return Response(status=204)
+
+class RegisterView(generics.CreateAPIView):
+    serializer_class = SerRegister
+    permission_classes = [AllowAny]
+

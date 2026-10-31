@@ -1,4 +1,5 @@
 from django.core.validators import MinLengthValidator,RegexValidator
+from django.conf import settings
 
 from django.db import models
 
@@ -40,6 +41,11 @@ class Car(models.Model):
     model_Id = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='modell_id')
     type_id = models.ForeignKey(Type, on_delete=models.CASCADE, related_name='type_id')
     extras = models.ManyToManyField(Extras, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              on_delete=models.CASCADE,
+                              null=True,
+                              blank=True,
+                              related_name='cars')
 
     vin_code = models.CharField(
         max_length=17,
