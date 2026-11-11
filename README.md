@@ -1,4 +1,7 @@
 Admin belépés: admin / Valtoztasd123!
+Teszt felhasználó: teszt / qwertzu8
+
+#Szerver indítási adatok beírása
 
 adatbázis fel lett töltve és be lett importálva az adatok
 
@@ -12,14 +15,16 @@ modelek:
     (gyarto,model,type,extras,user, információt is)
 - Extras: felsorolt extrák vannak bennük
     pl: tempomat, üllésfűtés, önvezetés
-- User: felhasználókat tartalmazza
+- User: felhasználókat tartalmazza | a django alapértelmezett modelje
+- Image: képeket tárol.
 
 Gyarto->Model->Type->Car<-Extras
-               User->Car->Admin
+               User->Car<-Admin
+               Images<-Car
+
 
 View/URLs:
 
-jelenleg 2 van:
 - home/ | ami
     "id", "gyarto", "model", "eng_volume", "type",
     "drive_method", "le", "gearbox",
@@ -33,22 +38,45 @@ jelenleg 2 van:
 - des/id | ami a des-t id alapján keresi
     ugyan azok az adatok vannak benne, mint a des-ben
     csak "GET","PUT","DELETE"
+- auth/login | belépés
+- auth/refresh | új token hívása
+- auth/register | új felhasználó létrehozása
 
-Felhasználók folyamatban!
-+ egy admin felület, akinek mindent -kilistáz, -törölni tud, -mindenkihez hozzá is tud adni
-+ AI implemetálása, pl egy autóról általános tudniválókat ír le, gyakori hibája, jellegzetessége, mire használják...
-+ egy fő felhasználó, ami hozzá tud adni autókat 
+
++ az admin mindent tud csinálni. PUT,POST,DELETE
++ Az AI a gemini lesz 15 kérdés percenként. A kereső mezőnél lesz. Ami segyítheti a megfelelő autó kiválasztását. Pl.: "legyen kék, pici, városi autó, ami megbízhatónak számít." és kilistázza az ehhez legközelebb eső autókat az adatbázisból.
++ modellek és gyártók listázásas szűrőkkel.
+
 
 POST:
+
 {
-  "type": 1,
-  "extras": [3, 5],
-  "vin_code": "JTD6XPV42T2RACKDA",
-  "license_plate": "XLGJ-393",
-  "colour": "zöld",
-  "prd_yr": 2014,
-  "registration_date": "2014-06-17",
-  "mileages_km": 120000,
-  "price_eur": 3900,
-  "notes": ""
+    "id": 483,
+    "gyarto": "Toyota",
+    "model": "3-as sorozat",
+    "eng_volume": "2.5",
+    "type": "Hybrid Executive AWD-i",
+    "drive_method": 3,
+    "le": 222,
+    "gearbox": 2,
+    "colour": "255",
+    "registration_date": "2026-11-11T10:09:49Z",
+    "price_eur": 200,
+    "vin_code": "SALLAAA128A593710",
+    "template_plate": "RVJF-598",
+    "extras": [
+        {
+            "id": 1,
+            "extra": "Tolatókamera",
+            "extras": []
+        }
+    ],
+    "owner": "teszt",
+    "images": [
+        {
+            "id": 1,
+            "car": 483,
+            "image": "/static/2026/11/wp7960363.jpg"
+        }
+    ]
 }

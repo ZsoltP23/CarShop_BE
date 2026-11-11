@@ -10,7 +10,7 @@ from .Serializers import SerRegister, SerCar, SerHome, SerDes
 
 @api_view(["GET"])
 def view_home(request):
-    cars = Car.objects.select_related("gyarto_id", "model_Id", "type_id")
+    cars = Car.objects.select_related("gyarto_id", "model_Id", "type_id").prefetch_related("images")
     ser = SerHome(cars, many=True)
     return Response(ser.data, status=201)
 
@@ -24,7 +24,7 @@ def view_des(request):
         cars = (
                 Car.objects
                 .select_related("gyarto_id", "model_Id", "type_id")
-                .prefetch_related("extras")
+                .prefetch_related("extras","images")
             )
         ser = SerDes(cars, many=True)
         return Response(ser.data)
@@ -43,7 +43,7 @@ def view_des_id(request, pk):
         car = (
             Car.objects
             .select_related("gyarto_id","model_Id","type_id")
-            .prefetch_related("extras")
+            .prefetch_related("extras","images")
             .get(id=pk)
         )
     except: return Response(status=404)

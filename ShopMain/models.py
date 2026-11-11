@@ -19,7 +19,7 @@ class Model(models.Model):
     yrs_til = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.gy_Id},{self.model}' 
+        return f'{self.model}' 
 
 class Type(models.Model):
 
@@ -30,10 +30,14 @@ class Type(models.Model):
     le = models.IntegerField()
     gearbox = models.IntegerField(max_length=255)
 
+    def __str__(self):
+        return f'{self.type}'
+
 class Extras(models.Model):
 
     extra = models.CharField(default=255)
     extras = models.ManyToManyField("self")
+
 
 class Car(models.Model):
 
@@ -68,3 +72,20 @@ class Car(models.Model):
     mileages_km = models.IntegerField()
     price_eur = models.IntegerField()
     notes = models.CharField(default=255)
+
+class Image(models.Model):
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="images",null=True, blank=True)
+    image = models.ImageField(upload_to="static/%Y/%m/")
+
+    def clean(self):
+        super().clean()
+        if self.car_id:
+            existing = Image.objects.filter(car_id=self.car_id).exclude(pk=self.pk).count()
+            if existing >= 6:
+                raise (
+                    f"Egy autóhoz maximum 6 kép tölthető fel"
+                )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
