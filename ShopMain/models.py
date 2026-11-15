@@ -1,4 +1,5 @@
 from django.core.validators import MinLengthValidator,RegexValidator
+from django.core.exceptions import ValidationError
 from django.conf import settings
 
 from django.db import models
@@ -35,8 +36,11 @@ class Type(models.Model):
 
 class Extras(models.Model):
 
-    extra = models.CharField(default=255)
+    extra = models.CharField(default="Ide írj egy extrát", blank=True)
     extras = models.ManyToManyField("self")
+
+    def __str__(self):
+        return self.extra
 
 
 class Car(models.Model):
@@ -73,19 +77,31 @@ class Car(models.Model):
     price_eur = models.IntegerField()
     notes = models.CharField(default=255)
 
+    def clean(self):
+        super().clean()
+        if self.model_Id_id and self.gyarto_id_id:
+            if self.model_Id.gyarto_Id_id != self.gyarto_id_id:
+                raise ValidationError({"model_Id": "Ez a model nem ehhez a gyártóhoz tartozik"})
+                
+        if self.type_id_id and self.model_Id_id:
+            if self.type_id.model_Id_id != self.model_Id_id:
+                raise ValidationError({"type_id": "Ez a típus nem ehhez a modelhez tartozik"})
+
 class Image(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="images",null=True, blank=True)
     image = models.ImageField(upload_to="static/%Y/%m/")
 
+    
     def clean(self):
         super().clean()
         if self.car_id:
             existing = Image.objects.filter(car_id=self.car_id).exclude(pk=self.pk).count()
             if existing >= 6:
                 raise (
-                    f"Egy autóhoz maximum 6 kép tölthető fel"
+                    ValidationError("Egy autóhoz maximum 6 kép tölthető fel")
                 )
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+    

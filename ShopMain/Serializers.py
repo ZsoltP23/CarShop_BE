@@ -26,6 +26,21 @@ class SerCar(ModelSerializer):
         fields = '__all__'
         read_only_fields = ['owner']
 
+    def validate(self, attrs):
+        gyarto = attrs.get("gyarto_id", getattr(self.instance, "gyarto_id", None))
+        model = attrs.get("model_Id", getattr(self.instance, "model_Id", None))
+        tipus = attrs.get("type_id", getattr(self.instance, "type_id", None))
+
+        errors = {}
+        if gyarto and model and model.gyarto_Id_id != gyarto.id:
+            errors["model_Id"] = f"A(z) {model} nem a(z) {gyarto} gyártó modellje."
+        if model and tipus and tipus.model_Id_id != model.id:
+            errors["type_id"] = f"A(z) {tipus} típus nem tartozik a {model} modellhez."
+
+        if errors:
+            raise serializers.ValidationError(errors)
+        return attrs
+
 class SerExtras(ModelSerializer):
     class Meta:
         model = Extras
@@ -78,7 +93,7 @@ class SerDes(SerHome):
         fields = SerHome.Meta.fields + ["vin_code","template_plate","extras","owner","images","upload_images"]
 
     def create(self, validated_data):
-        files = validated_data.pop("uploaded_images", [])
+        files = validated_data.pop("uploded_images", [])
         car = super().create(validated_data)
         for f in files:
             Image.object.create(car=car, image=f)

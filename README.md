@@ -1,7 +1,12 @@
 Admin belépés: admin / Valtoztasd123!
 Teszt felhasználó: teszt / qwertzu8
+Felhasználó #1: Zsolt_Zs / qwertzu8
 
-#Szerver indítási adatok beírása
+Szerver indítási adatok:
+- 
+- .venv/Script\Activate // python -m venv .venv
+- pip install -r requirement.txt
+- python manage.py runserver
 
 adatbázis fel lett töltve és be lett importálva az adatok
 
@@ -31,11 +36,11 @@ View/URLs:
     "colour", "registration_date", "price_eur"
     adatokat add vissza.
     CSAK "GET"
-- des/ | ami a home-ot +
+- des/ | ami a home-ot + | BEJELENTKEZÉS Után érhető el
     "vin_code","template_plate","extras" +
     extrákat, ami egy másik adatbázisból jön!
     csak "GET","POST"
-- des/id | ami a des-t id alapján keresi
+- des/id | ami a des-t id alapján keresi | BEJELENTKEZÉS Után érhető el
     ugyan azok az adatok vannak benne, mint a des-ben
     csak "GET","PUT","DELETE"
 - auth/login | belépés
@@ -43,9 +48,7 @@ View/URLs:
 - auth/register | új felhasználó létrehozása
 
 
-+ az admin mindent tud csinálni. PUT,POST,DELETE
 + Az AI a gemini lesz 15 kérdés percenként. A kereső mezőnél lesz. Ami segyítheti a megfelelő autó kiválasztását. Pl.: "legyen kék, pici, városi autó, ami megbízhatónak számít." és kilistázza az ehhez legközelebb eső autókat az adatbázisból.
-+ modellek és gyártók listázásas szűrőkkel.
 
 
 POST:

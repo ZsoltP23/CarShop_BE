@@ -1,22 +1,30 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Car
 from .Serializers import SerRegister, SerCar, SerHome, SerDes
 
-
+#def szur_adatok(qs, params):
+#    if v := params.get("gyarto"):
+#        qs = qs.filter(gyarto_id=v)
+#    if v := params.get("model"):
+#        qs = qs.filter(model_Id=v)
+#    if v := params.get("type"):
+#        qs = qs.filter(type_id=v)
+#    return qs
 
 @api_view(["GET"])
 def view_home(request):
     cars = Car.objects.select_related("gyarto_id", "model_Id", "type_id").prefetch_related("images")
-    ser = SerHome(cars, many=True)
-    return Response(ser.data, status=201)
+    #car_s = szur_adatok(cars, request.query_params)
+    return Response(SerHome(cars, many=True).data)
 
 
 
 @api_view(["GET","POST"])
+@permission_classes([IsAuthenticated])
 def view_des(request):
 
     #GET
@@ -38,6 +46,7 @@ def view_des(request):
         return Response(ser.errors, status=400)
 
 @api_view(["GET","PUT","DELETE"])
+@permission_classes([IsAuthenticated])
 def view_des_id(request, pk):
     try:
         car = (
