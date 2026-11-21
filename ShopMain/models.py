@@ -49,6 +49,7 @@ class Car(models.Model):
     model_Id = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='modell_id')
     type_id = models.ForeignKey(Type, on_delete=models.CASCADE, related_name='type_id')
     extras = models.ManyToManyField(Extras, blank=True)
+    images = models.ImageField(upload_to="cars/%Y/%m/", null=True, blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE,
                               null=True,
@@ -70,12 +71,12 @@ class Car(models.Model):
             RegexValidator("^[A-Z]{4}-\d{3}$")
         ]
     )
-    colour = models.CharField(default=255)
+    colour = models.CharField(max_length=255, default="Vörös")
     prd_yr = models.IntegerField()
     registration_date = models.DateTimeField()
     mileages_km = models.IntegerField()
     price_eur = models.IntegerField()
-    notes = models.CharField(default=255)
+    notes = models.CharField(max_length=255)
 
     def clean(self):
         super().clean()
@@ -87,21 +88,5 @@ class Car(models.Model):
             if self.type_id.model_Id_id != self.model_Id_id:
                 raise ValidationError({"type_id": "Ez a típus nem ehhez a modelhez tartozik"})
 
-class Image(models.Model):
-    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="images",null=True, blank=True)
-    image = models.ImageField(upload_to="static/%Y/%m/")
 
-    
-    def clean(self):
-        super().clean()
-        if self.car_id:
-            existing = Image.objects.filter(car_id=self.car_id).exclude(pk=self.pk).count()
-            if existing >= 6:
-                raise (
-                    ValidationError("Egy autóhoz maximum 6 kép tölthető fel")
-                )
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
     

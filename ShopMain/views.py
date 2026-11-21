@@ -17,7 +17,7 @@ from .Serializers import SerRegister, SerCar, SerHome, SerDes
 
 @api_view(["GET"])
 def view_home(request):
-    cars = Car.objects.select_related("gyarto_id", "model_Id", "type_id").prefetch_related("images")
+    cars = Car.objects.select_related("gyarto_id", "model_Id", "type_id")
     #car_s = szur_adatok(cars, request.query_params)
     return Response(SerHome(cars, many=True).data)
 
@@ -32,7 +32,7 @@ def view_des(request):
         cars = (
                 Car.objects
                 .select_related("gyarto_id", "model_Id", "type_id")
-                .prefetch_related("extras","images")
+                .prefetch_related("extras")
             )
         ser = SerDes(cars, many=True)
         return Response(ser.data)
@@ -52,7 +52,7 @@ def view_des_id(request, pk):
         car = (
             Car.objects
             .select_related("gyarto_id","model_Id","type_id")
-            .prefetch_related("extras","images")
+            .prefetch_related("extras")
             .get(id=pk)
         )
     except: return Response(status=404)
